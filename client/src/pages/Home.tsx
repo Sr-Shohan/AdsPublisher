@@ -197,7 +197,7 @@ export default function Home() {
               
               <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
                 {/* Configuration Panel */}
-                <Card className="xl:col-span-1 shadow-lg border-border/60 h-fit sticky top-8">
+                <Card className="xl:col-span-1 shadow-lg border-border/60 h-fit xl:sticky xl:top-8">
                   <CardHeader className="bg-muted/30 border-b border-border/50 pb-4">
                     <CardTitle className="text-lg flex items-center gap-2">
                       <Settings2 className="w-5 h-5 text-primary" />
