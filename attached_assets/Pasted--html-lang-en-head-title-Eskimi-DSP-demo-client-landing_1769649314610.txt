@@ -1,0 +1,537 @@
+<html lang="en"><head>
+	<title>Eskimi DSP demo: client landing page</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<style>
+		body {
+			background: #555;
+			font-family: sans-serif;
+		}
+		a:link, a:visited {
+			color: #333;
+			text-decoration: none;
+		}
+		a:hover, a:active {
+			color: #555;
+			text-decoration: underline;
+		}
+		iframe {
+			border: 1px solid black;
+		}
+		.content {
+			max-width: 1000px;
+			margin: auto;
+			background: white;
+			padding: 10px;
+			text-align: center;
+		}
+		#cookieNotice {
+			position: fixed;
+			bottom: 0;
+			left: 0;
+			width: 100%;
+			background-color: #333;
+			color: white;
+			text-align: center;
+			padding: 15px;
+			z-index: 1000;
+		}
+		.cookie-btn {
+			background-color: #4CAF50;
+			color: white;
+			padding: 10px 20px;
+			margin: 10px;
+			border: none;
+			cursor: pointer;
+		}
+		.cookie-btn.decline {
+			background-color: #f44336;
+		}
+		.cookie-btn:hover {
+			opacity: 0.8;
+		}
+		.settings-panel {
+			background-color: #f9f9f9;
+			border: 1px solid #ddd;
+			border-radius: 8px;
+			padding: 15px;
+			margin: 20px auto;
+			max-width: 800px;
+			box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+		}
+		.settings-panel h3 {
+			margin-top: 0;
+			margin-bottom: 15px;
+			color: #333;
+			border-bottom: 1px solid #eee;
+			padding-bottom: 10px;
+			font-size: 1.2em;
+			text-align: left;
+		}
+		#adForm {
+			display: flex;
+			flex-direction: column;
+			gap: 15px;
+		}
+		.form-row {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			flex-wrap: wrap;
+			gap: 20px;
+		}
+		.primary-controls-wrapper {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 15px;
+		}
+		.input-group {
+			display: flex;
+			align-items: center;
+			gap: 5px;
+		}
+		.input-group label {
+			font-size: 0.9em;
+			color: #555;
+		}
+		.input-group input {
+			width: 80px;
+			padding: 6px;
+			border: 1px solid #ccc;
+			border-radius: 4px;
+		}
+		#customParamsContainer {
+			border-top: 1px solid #eee;
+			padding-top: 15px;
+		}
+		#customParamsContainer > label {
+			display: block;
+			text-align: left;
+			font-weight: bold;
+			margin-bottom: 10px;
+			color: #333;
+		}
+		.param-row {
+			margin-bottom: 8px;
+		}
+		.param-row-inputs {
+			display: flex;
+			align-items: center;
+			gap: 5px;
+		}
+		.param-row-inputs select,
+		.param-row-inputs input {
+			padding: 6px;
+			border: 1px solid #ccc;
+			border-radius: 4px;
+			flex: 1;
+		}
+		.param-row-inputs button {
+			width: auto;
+			padding: 3px 9px;
+			background-color: #dc3545;
+			color: white;
+			border: none;
+			cursor: pointer;
+			border-radius: 4px;
+			font-weight: bold;
+		}
+		.param-help-text {
+			font-size: 0.8em;
+			color: #666;
+			text-align: left;
+			margin-top: 4px;
+			padding-left: 5px;
+		}
+		#addParamBtn {
+			background-color: #007bff;
+			color: white;
+			border: none;
+			padding: 6px 10px;
+			border-radius: 4px;
+			cursor: pointer;
+		}
+		#addParamBtn:hover {
+			background-color: #0056b3;
+		}
+		.request-btn {
+			padding: 10px 18px;
+			font-size: 1em;
+			font-weight: bold;
+			background-color: #28a745;
+			color: white;
+			border: none;
+			border-radius: 5px;
+			cursor: pointer;
+		}
+		.request-btn:hover {
+			background-color: #218838;
+		}
+	</style>
+</head>
+<body>
+
+<div id="cookieNotice" style="display:none;">
+	<p>We use cookies to enhance your experience, provide personalized content, and assist us in improving our marketing efforts. By consenting, you allow us to collect certain data to tailor your experience. Do you consent to the use of cookies for these purposes?</p>
+	<button class="cookie-btn" id="acceptAllCookies">Accept All</button>
+	<button class="cookie-btn" id="acceptNecessaryCookies">Accept Necessary</button>
+	<button class="cookie-btn decline" id="declineCookies">Decline</button>
+</div>
+
+<div class="content">
+	<h1>This is a sample publisher's page</h1>
+	<p>This page is serving ads by sending bid requests to Eskimi DSP.</p>
+	
+	<div class="settings-panel">
+		<form id="adForm" method="GET" action="">
+			<h3>Ad request settings</h3>
+			<div class="form-row">
+				<div class="primary-controls-wrapper">
+					<div class="input-group">
+						<label for="ads">Number of ads:</label>
+						<input type="number" id="ads" name="ads" min="1" value="1">
+					</div>
+					<div class="input-group">
+						<label for="width">Width (px):</label>
+						<input type="number" id="width" name="width" min="1" value="300">
+					</div>
+					<div class="input-group">
+						<label for="height">Height (px):</label>
+						<input type="number" id="height" name="height" min="1" value="250">
+					</div>
+				</div>
+				<button type="submit" class="request-btn">Request ads</button>
+			</div>
+			
+			<div id="customParamsContainer">
+				<label>Custom parameters:</label>
+				<div id="paramRows"></div>
+				<button type="button" id="addParamBtn">Add parameter</button>
+			</div>
+		</form>
+	</div>
+
+	<br>
+	<div id="adsContainer"><div style="display: inline-block; vertical-align: top; margin: 10px;"><iframe src="https://ads.eskimi.com/getad/?tag=97cc83bb9917a07bdf3d53e8507157b2&amp;w=300&amp;h=250&amp;audit=1&amp;domain=demo.eskimi.com&amp;page=https%3A%2F%2Fdemo.eskimi.com%2Fpublisher%2F" width="300" height="250" scrolling="no" id="ad0"></iframe><br> (<a href="javascript:void(0);">reload ad</a>)  (<a href="https://ads.eskimi.com/getad/?tag=97cc83bb9917a07bdf3d53e8507157b2&amp;w=300&amp;h=250&amp;audit=1&amp;domain=demo.eskimi.com&amp;page=https%3A%2F%2Fdemo.eskimi.com%2Fpublisher%2F" target="_blank">load ad in new window</a>) (<a href="https://ads.eskimi.com/getad/?tag=97cc83bb9917a07bdf3d53e8507157b2&amp;w=300&amp;h=250&amp;audit=1&amp;domain=demo.eskimi.com&amp;page=https%3A%2F%2Fdemo.eskimi.com%2Fpublisher%2F&amp;debug" target="_blank">debug</a>)</div></div>
+</div>
+
+<script>
+	function runEskimiTracking(consentString) {
+		!function(f,e,t,u,n,s,p){if(f.esk)return;n=f.esk=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f.___esk)f.___esk=n;n.push=n;n.loaded=!0;n.queue=[];s=e.createElement(t);s.async=!0;s.src=u;p=e.getElementsByTagName(t)[0];p.parentNode.insertBefore(s,p)}(window,document,'script','https://dsp-media.eskimi.com/assets/js/e/gtr.min.js?_=0.0.0.6');
+		esk('bid');
+		esk('consent', consentString);
+	}
+</script>
+
+<script>
+	const CONSENT_STRINGS = {
+		acceptedAll: 'CQGRA8sQGRA8sAcAAAENCZCMAP_AAH_AABaYGXQAgF5gMuAy6AEAvMBlwAA.II7Nd_X__bX9n-_7_6ft0eY1f9_r37uQzDhfNs-8F3L_W_LwX32E7NF36tq4KmR4ku1bBIQNtHMnUDUmxaolVrzHsak2cpyNKJ_JkknsZe2dYGF9Pn9lD-YKZ7_5_9_f52T_9_9_-39z3_9f___dv_-__-vjf_599n_v9fV_78_Kf9______-____________8A',
+		acceptedNecessary: 'CQF_ZFyQF_ZFyAcAAAENCZCMAP_AAH_AABaYGXQAQGXAZdABAZcAAA.II7Nd_X__bX9n-_7_6ft0eY1f9_r37uQzDhfNs-8F3L_W_LwX32E7NF36tq4KmR4ku1bBIQNtHMnUDUmxaolVrzHsak2cpyNKJ_JkknsZe2dYGF9Pn9lD-YKZ7_5_9_f52T_9_9_-39z3_9f___dv_-__-vjf_599n_v9fV_78_Kf9______-____________8A'
+	};
+
+	const PARAMS_INFO = [
+		{ object: 'Settings', key: 'ssl', comment: 'Endpoint SSL', example: '0, 1', default: '1' },
+		{ object: 'Settings', key: 'ep', comment: 'Data center', example: 'eu-1, asia-1', default: 'eu-1' },
+		{ object: 'Settings', key: 'ex', comment: 'Exchange alias', example: 'test, smaato, doubleclick, ...', default: 'test' },
+		{ object: 'Settings', key: 'exbs', comment: 'BidSwitch Exchange alias', example: 'adform, inmobi, teads...', default: '' },
+		{ object: 'Settings', key: 'env', comment: 'Environment', example: 'app, site', default: 'site' },
+		{ object: 'Settings', key: 'type', comment: 'Creative type', example: 'banner, native, video, audio', default: 'banner' },
+		{ object: 'Settings', key: 'pmp', comment: 'Private marketplace', example: '0, 1', default: '0' },
+		{ object: 'Settings', key: 'audit', comment: 'No bid reason enforcement', example: '0, 1', default: '0' },
+		{ object: 'Settings', key: 'test', comment: 'Test bid request', example: '0, 1', default: '0' },
+		{ object: 'Settings', key: 'win', comment: 'Win notification enforcement', example: '0, 1', default: '1' },
+		{ object: 'BidRequest', key: 'at', comment: 'Auction type', example: '1, 2', default: '1' },
+		{ object: 'BidRequest', key: 'badv', comment: 'Blocked advertiser domains', example: 'example.com, test.com, ...', default: 'example.com' },
+		{ object: 'BidRequest', key: 'bapp', comment: 'Blocked advertiser bundles', example: 'com.example, com.test, ...', default: 'com.example' },
+		{ object: 'BidRequest', key: 'bcat', comment: 'Blocked content categories', example: 'IAB1, IAB1-1, ...', default: 'IAB26' },
+		{ object: 'BidRequest', key: 'cur', comment: 'Currency', example: 'USD, EUR, ...', default: 'USD' },
+		{ object: 'BidRequest', key: 'tmax', comment: 'Max time for bid request', example: '200, 300, ...', default: '300' },
+		{ object: 'BidRequest', key: 'wlang', comment: 'Working language', example: 'en, fr, ...', default: 'en' },
+		{ object: 'BidRequest.device', key: 'ip', comment: 'Device IPv4 Address', example: 'IPv4 Address', default: '' },
+		{ object: 'BidRequest.device', key: 'ipv6', comment: 'Device IPv6 Address', example: 'IPv6 Address', default: '' },
+		{ object: 'BidRequest.device', key: 'city', comment: 'Device city', example: 'Vilnius, Chicago, ...', default: '' },
+		{ object: 'BidRequest.device', key: 'lat', comment: 'Device latitude', example: '1.23', default: '' },
+		{ object: 'BidRequest.device', key: 'lon', comment: 'Device longitude', example: '2.34', default: '' },
+		{ object: 'BidRequest.device', key: 'js', comment: 'JavaScript enabled', example: '0, 1', default: '1' },
+		{ object: 'BidRequest.imp', key: 'bf', comment: 'Bid floor', example: '0.01, 0.02, ...', default: '0.01' },
+		{ object: 'BidRequest.imp', key: 'tagid', comment: 'Tag ID', example: '1, 2, ...', default: 'rand(1,2)' },
+		{ object: 'BidRequest.imp', key: 'instl', comment: 'Intestitial', example: '0, 1', default: '0' },
+		{ object: 'BidRequest.imp.pmp', key: 'dealid', comment: 'Deal ID', example: 'String', default: 'test_deal_1' },
+		{ object: 'BidRequest.imp.pmp', key: 'dealat', comment: 'Deal auction type', example: '0, 1', default: '1' },
+		{ object: 'BidRequest.imp.pmp', key: 'dealbf', comment: 'Deal bid floor', example: '0.01, 0.02, ...', default: '0.05' },
+		{ object: 'BidRequest.imp.pmp', key: 'dealpa', comment: 'Deal preferred auction', example: '0, 1', default: '1' },
+		{ object: 'BidRequest.banner/video', key: 'w', comment: 'Width', example: 'Integer', default: '300' },
+		{ object: 'BidRequest.banner/video', key: 'h', comment: 'Height', example: 'Integer', default: '250' },
+		{ object: 'BidRequest.banner/video', key: 'pos', comment: 'Ad position', example: '1-7', default: '1' },
+		{ object: 'BidRequest.app', key: 'appid', comment: 'App ID', example: 'MD5 hash of app bundle', default: "md5('com.eskimi.demo')" },
+		{ object: 'BidRequest.app', key: 'bundle', comment: 'App bundle ID', example: 'com.eskimi.demo, com.eskimi.demo2', default: 'com.eskimi.demo' },
+		{ object: 'BidRequest.app', key: 'cat', comment: 'App category', example: 'IAB1, IAB1-1, ...', default: 'IAB1' },
+		{ object: 'BidRequest.app', key: 'pubid', comment: 'Publisher ID', example: 'String', default: '111' },
+		{ object: 'BidRequest.app', key: 'pubname', comment: 'Publisher name', example: 'String', default: 'Eskimi' },
+		{ object: 'BidRequest.site', key: 'siteid', comment: 'Site ID', example: 'MD5 hash of site domain', default: "md5('demo.eskimi.com')" },
+		{ object: 'BidRequest.site', key: 'domain', comment: 'Site domain', example: 'demo.eskimi.com, ...', default: 'demo.eskimi.com' },
+		{ object: 'BidRequest.site', key: 'page', comment: 'Page URL', example: 'URL', default: '' },
+		{ object: 'BidRequest.site', key: 'cat', comment: 'Site category', example: 'IAB1, IAB1-1, ...', default: 'IAB1' },
+		{ object: 'BidRequest.site', key: 'pubid', comment: 'Publisher ID', example: 'String', default: '111' },
+		{ object: 'BidRequest.site', key: 'pubname', comment: 'Publisher name', example: 'String', default: 'Eskimi' },
+		{ object: 'BidRequest.regs', key: 'coppa', comment: "Children's Privacy Act", example: '0, 1', default: '0' },
+		{ object: 'BidRequest.user', key: 'uid', comment: 'User ID', example: '0, 1', default: '1' },
+		{ object: 'BidRequest.user', key: 'eids', comment: 'External user IDs', example: '0, 1', default: '0' }
+	];
+
+	function getParameterByName(name, url) {
+		if (!url) url = window.location.href;
+		name = name.replace(/[\\[\\]]/g, '\\$&');
+		var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+				results = regex.exec(url);
+		if (!results) return null;
+		if (!results[2]) return '';
+		return decodeURIComponent(results[2].replace(/\\+/g, ' '));
+	}
+
+	function addParamRow(key = '', value = '') {
+		const paramRowsContainer = document.getElementById('paramRows');
+		const row = document.createElement('div');
+		row.className = 'param-row';
+		
+		const inputsDiv = document.createElement('div');
+		inputsDiv.className = 'param-row-inputs';
+
+		const keySelect = document.createElement('select');
+		keySelect.className = 'param-key';
+
+		const placeholderOption = document.createElement('option');
+		placeholderOption.value = '';
+		placeholderOption.textContent = 'Select a parameter...';
+		placeholderOption.disabled = true;
+		keySelect.appendChild(placeholderOption);
+		
+		const groupedParams = PARAMS_INFO.reduce((acc, param) => {
+			acc[param.object] = acc[param.object] || [];
+			acc[param.object].push(param);
+			return acc;
+		}, {});
+
+		for (const groupName in groupedParams) {
+			const optgroup = document.createElement('optgroup');
+			optgroup.label = groupName;
+			groupedParams[groupName].sort((a,b) => a.key.localeCompare(b.key)).forEach(param => {
+				const option = document.createElement('option');
+				option.value = param.key;
+				option.textContent = param.key;
+				optgroup.appendChild(option);
+			});
+			keySelect.appendChild(optgroup);
+		}
+		
+		keySelect.value = key;
+		if (!keySelect.value) {
+			keySelect.value = '';
+		}
+		
+		const valueInput = document.createElement('input');
+		valueInput.type = 'text';
+		valueInput.className = 'param-value';
+		valueInput.placeholder = 'Value';
+		valueInput.value = value;
+
+		const removeBtn = document.createElement('button');
+		removeBtn.textContent = 'X';
+		removeBtn.onclick = function() {
+			paramRowsContainer.removeChild(row);
+		};
+
+		const helpText = document.createElement('div');
+		helpText.className = 'param-help-text';
+		
+		inputsDiv.appendChild(keySelect);
+		inputsDiv.appendChild(valueInput);
+		inputsDiv.appendChild(removeBtn);
+		row.appendChild(inputsDiv);
+		row.appendChild(helpText);
+		paramRowsContainer.appendChild(row);
+
+		keySelect.addEventListener('change', () => updateHelpText(keySelect));
+		updateHelpText(keySelect);
+	}
+
+	function updateHelpText(keySelect) {
+		const key = keySelect.value;
+		const row = keySelect.closest('.param-row');
+		const helpTextDiv = row.querySelector('.param-help-text');
+		const valueInput = row.querySelector('.param-value');
+		const paramInfo = PARAMS_INFO.find(p => p.key === key);
+
+		if (paramInfo) {
+			helpTextDiv.innerHTML = `<strong>${paramInfo.comment}</strong> (e.g., ${paramInfo.example})`;
+			valueInput.placeholder = paramInfo.default || 'Value';
+		} else {
+			helpTextDiv.innerHTML = '';
+			valueInput.placeholder = 'Value';
+		}
+	}
+
+	function getCustomQueryString() {
+		const params = [];
+		document.querySelectorAll('.param-row').forEach(row => {
+			const key = row.querySelector('.param-key').value;
+			const value = row.querySelector('.param-value').value.trim();
+			if (key) {
+				params.push(key + '=' + value);
+			}
+		});
+		return params.join('&');
+	}
+
+	window.onload = function() {
+		var publisherCookieConsent = localStorage.getItem('publisherCookieConsent');
+
+		if (publisherCookieConsent === 'acceptedAll') {
+			runEskimiTracking(CONSENT_STRINGS.acceptedAll);
+		} else if (publisherCookieConsent === 'acceptedNecessary') {
+			runEskimiTracking(CONSENT_STRINGS.acceptedNecessary);
+		} else if (!publisherCookieConsent) {
+			document.getElementById('cookieNotice').style.display = 'block';
+		}
+
+		var ads = getParameterByName('ads') || '1';
+		var width = getParameterByName('width') || '300';
+		var height = getParameterByName('height') || '250';
+		var customQuery = getParameterByName('customQuery') || '';
+
+		document.getElementById('ads').value = ads;
+		document.getElementById('width').value = width;
+		document.getElementById('height').value = height;
+		
+		if (customQuery) {
+			customQuery.split('&').forEach(part => {
+				const [key, ...valueParts] = part.split('=');
+				const value = valueParts.join('=');
+				if (key) {
+					addParamRow(key, value || '');
+				}
+			});
+		}
+
+		document.getElementById('addParamBtn').addEventListener('click', function() {
+			addParamRow();
+		});
+
+		generateAds();
+
+		document.getElementById('adForm').addEventListener('submit', function(e) {
+			e.preventDefault();
+			var url = window.location.protocol + "//" + window.location.host + window.location.pathname;
+			url += '?ads=' + encodeURIComponent(document.getElementById('ads').value);
+			url += '&width=' + encodeURIComponent(document.getElementById('width').value);
+			url += '&height=' + encodeURIComponent(document.getElementById('height').value);
+			
+			var customQueryValue = getCustomQueryString();
+			if (customQueryValue) {
+				url += '&customQuery=' + encodeURIComponent(customQueryValue);
+			}
+			window.location.href = url;
+		});
+	};
+
+	document.getElementById('acceptAllCookies').addEventListener('click', function() {
+		localStorage.setItem('publisherCookieConsent', 'acceptedAll');
+		document.getElementById('cookieNotice').style.display = 'none';
+		runEskimiTracking(CONSENT_STRINGS.acceptedAll);
+	});
+
+	document.getElementById('acceptNecessaryCookies').addEventListener('click', function() {
+		localStorage.setItem('publisherCookieConsent', 'acceptedNecessary');
+		document.getElementById('cookieNotice').style.display = 'none';
+		runEskimiTracking(CONSENT_STRINGS.acceptedNecessary);
+	});
+
+	document.getElementById('declineCookies').addEventListener('click', function() {
+		localStorage.setItem('publisherCookieConsent', 'declined');
+		document.getElementById('cookieNotice').style.display = 'none';
+	});
+
+	function generateAds() {
+		var ads = parseInt(document.getElementById('ads').value);
+		var width = document.getElementById('width').value;
+		var height = document.getElementById('height').value;
+		var customQuery = getCustomQueryString();
+
+		var adsContainer = document.getElementById('adsContainer');
+		adsContainer.innerHTML = '';
+
+		var domain = window.location.hostname;
+
+		var pageUrlForAdRequest = new URL(window.location.href);
+		pageUrlForAdRequest.searchParams.delete('ads');
+		pageUrlForAdRequest.searchParams.delete('width');
+		pageUrlForAdRequest.searchParams.delete('height');
+		pageUrlForAdRequest.searchParams.delete('customQuery');
+		var finalPageParamValue = pageUrlForAdRequest.toString();
+
+		var baseAdUrl = 'https://ads.eskimi.com/getad/?tag=97cc83bb9917a07bdf3d53e8507157b2&w=' + width + '&h=' + height + '&audit=1';
+		baseAdUrl += '&domain=' + domain;
+		
+		if (!customQuery.toLowerCase().includes('page=')) {
+			baseAdUrl += '&page=' + encodeURIComponent(finalPageParamValue);
+		}
+		
+		if (customQuery) {
+			baseAdUrl += '&' + customQuery;
+		}
+
+		for (var i = 0; i < ads; i++) {
+			var adWrapper = document.createElement('div');
+			adWrapper.style.display = 'inline-block';
+			adWrapper.style.verticalAlign = 'top';
+			adWrapper.style.margin = '10px';
+
+			var iframe = document.createElement('iframe');
+			iframe.src = baseAdUrl;
+			iframe.width = width;
+			iframe.height = height;
+			iframe.scrolling = 'no';
+			iframe.id = 'ad' + i;
+
+			adWrapper.appendChild(iframe);
+			adWrapper.appendChild(document.createElement('br'));
+
+			var reloadLink = document.createElement('a');
+			reloadLink.href = 'javascript:void(0);';
+			reloadLink.textContent = 'reload ad';
+			reloadLink.onclick = (function(iframeId) {
+				return function() {
+					document.getElementById(iframeId).src = document.getElementById(iframeId).src;
+				};
+			})('ad' + i);
+
+			var newWindowLink = document.createElement('a');
+			newWindowLink.href = baseAdUrl;
+			newWindowLink.target = '_blank';
+			newWindowLink.textContent = 'load ad in new window';
+
+			var debugLink = document.createElement('a');
+			debugLink.href = baseAdUrl + '&debug';
+			debugLink.target = '_blank';
+			debugLink.textContent = 'debug';
+
+			adWrapper.appendChild(document.createTextNode(' ('));
+			adWrapper.appendChild(reloadLink);
+			adWrapper.appendChild(document.createTextNode(') '));
+			adWrapper.appendChild(document.createTextNode(' ('));
+			adWrapper.appendChild(newWindowLink);
+			adWrapper.appendChild(document.createTextNode(') '));
+			adWrapper.appendChild(document.createTextNode('('));
+			adWrapper.appendChild(debugLink);
+			adWrapper.appendChild(document.createTextNode(')'));
+
+			adsContainer.appendChild(adWrapper);
+
+			if ((i + 1) % 3 === 0) {
+				adsContainer.appendChild(document.createElement('br'));
+			}
+		}
+	}
+</script>
+
+
+</body></html>
