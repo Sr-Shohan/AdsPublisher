@@ -43,7 +43,7 @@ export default function Home() {
     }
   });
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, prepend, remove } = useFieldArray({
     control: form.control,
     name: "customParams"
   });
@@ -102,13 +102,24 @@ export default function Home() {
           <ScrollArea className="flex-1">
             <div className="p-4 md:p-12 max-w-7xl mx-auto space-y-12">
               
-              <div className="flex flex-col gap-2 mb-4">
-                <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
-                  Ad Generator
-                </h1>
-                <p className="text-muted-foreground text-lg max-w-2xl">
-                  Construct and test ad placements with Eskimi DSP's powerful configuration suite.
-                </p>
+              <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-4">
+                <div className="flex flex-col gap-2">
+                  <h1 className="text-4xl md:text-6xl font-black tracking-tight bg-gradient-to-br from-foreground via-foreground to-foreground/50 bg-clip-text text-transparent">
+                    Ad Generator
+                  </h1>
+                  <p className="text-muted-foreground text-lg max-w-2xl font-medium opacity-80">
+                    Construct and test ad placements with Eskimi DSP's powerful configuration suite.
+                  </p>
+                </div>
+                <div className="flex items-center gap-3 bg-background/40 backdrop-blur-md p-2 rounded-2xl border border-border/50 shadow-sm">
+                  <div className="px-4 py-2 rounded-xl bg-primary/10 text-primary text-sm font-bold flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                    System Active
+                  </div>
+                  <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-background/60" onClick={resetConsent} title="Reset Settings">
+                    <Settings className="w-5 h-5" />
+                  </Button>
+                </div>
               </div>
 
               <div className="grid grid-cols-1 xl:grid-cols-3 gap-10">
@@ -167,7 +178,7 @@ export default function Home() {
                           type="button" 
                           variant="secondary" 
                           size="sm" 
-                          onClick={() => append({ key: "", value: "" })}
+                          onClick={() => prepend({ key: "", value: "" })}
                           className="h-9 px-4 rounded-full font-semibold hover:scale-105 transition-transform bg-primary/5 text-primary hover:bg-primary/10 border-primary/10"
                         >
                           <Plus className="w-4 h-4 mr-2" /> Add Param
@@ -181,8 +192,8 @@ export default function Home() {
 
                           return (
                             <div key={field.id} className="group relative bg-muted/20 p-4 rounded-2xl border border-border/50 hover:border-primary/20 transition-all duration-300">
-                              <div className="flex gap-3 mb-3">
-                                <div className="flex-1">
+                              <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 mb-3">
+                                <div className="sm:col-span-5">
                                   <Select
                                     value={currentKey}
                                     onValueChange={(value) => {
@@ -210,22 +221,25 @@ export default function Home() {
                                     </SelectContent>
                                   </Select>
                                 </div>
-                                <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-10 w-10 rounded-xl text-muted-foreground hover:text-destructive hover:bg-destructive/10 shrink-0"
-                                  onClick={() => remove(index)}
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </Button>
+                                <div className="sm:col-span-5">
+                                  <Input
+                                    placeholder={paramInfo?.default || "Value"}
+                                    {...form.register(`customParams.${index}.value`)}
+                                    className="h-10 font-mono bg-background/50 border-transparent focus:border-primary/20 rounded-xl"
+                                  />
+                                </div>
+                                <div className="sm:col-span-2 flex justify-end">
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-10 w-10 rounded-xl text-muted-foreground hover:text-destructive hover:bg-destructive/10 shrink-0"
+                                    onClick={() => remove(index)}
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </Button>
+                                </div>
                               </div>
-                              
-                              <Input
-                                placeholder={paramInfo?.default || "Value"}
-                                {...form.register(`customParams.${index}.value`)}
-                                className="h-10 font-mono bg-background/50 border-transparent focus:border-primary/20 rounded-xl"
-                              />
                               
                               {paramInfo && (
                                 <div className="mt-3 flex items-start gap-2.5 text-[11px] leading-relaxed text-muted-foreground bg-primary/5 p-3 rounded-xl border border-primary/5">
@@ -256,7 +270,7 @@ export default function Home() {
                         Generate Ads
                       </Button>
                       
-                      <Button variant="outline" size="icon" className="h-12 w-12 rounded-2xl border-border/50 hover:bg-muted/50 transition-colors" title="Reset Cookie Consent" onClick={resetConsent}>
+                      <Button variant="outline" size="icon" className="h-12 w-12 rounded-2xl border-border/50 hover:bg-muted/50 transition-colors hidden" title="Reset Cookie Consent" onClick={resetConsent}>
                         <Settings className="w-5 h-5" />
                       </Button>
                     </div>
